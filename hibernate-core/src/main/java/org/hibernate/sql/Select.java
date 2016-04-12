@@ -147,7 +147,7 @@ public class Select {
 	 * @param selectClause The selectClause to set
 	 */
 	public Select setSelectClause(String selectClause) {
-		this.selectClause = selectClause;
+		this.selectClause = selectClause.intern();
 		this.guesstimatedBufferSize += selectClause.length();
 		return this;
 	}

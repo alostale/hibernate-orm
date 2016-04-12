@@ -33,6 +33,7 @@ import org.hibernate.engine.SessionFactoryImplementor;
 import org.hibernate.engine.LoadQueryInfluencers;
 import org.hibernate.persister.collection.CollectionPersister;
 import org.hibernate.persister.entity.Loadable;
+import org.hibernate.sql.Select;
 import org.hibernate.type.EntityType;
 
 /**
@@ -54,6 +55,7 @@ public abstract class OuterJoinLoader extends BasicLoader {
 	protected int[] owners;
 	protected EntityType[] ownerAssociationTypes;
 	protected String sql;
+	protected Select select;
 	protected String[] suffixes;
 	protected String[] collectionSuffixes;
 
@@ -79,8 +81,16 @@ public abstract class OuterJoinLoader extends BasicLoader {
 	}
 
 	protected final String getSQLString() {
+ 	 	if (select != null) {
+			return select.toStatementString();
+		} else {
 		return sql;
 	}
+	}
+
+	protected final Select getSelect() {
+		return select;
+ 	}
 
 	protected final Loadable[] getEntityPersisters() {
 		return persisters;
@@ -128,7 +138,10 @@ public abstract class OuterJoinLoader extends BasicLoader {
 		collectionSuffixes = walker.getCollectionSuffixes();
 		owners = walker.getOwners();
 		collectionOwners = walker.getCollectionOwners();
-		sql = walker.getSQLString();
+		select = walker.getSelect();
+		if (select == null) {
+		  sql = walker.getSQLString();
+		}
 		aliases = walker.getAliases();
 	}
 

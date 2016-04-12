@@ -142,6 +142,7 @@ public abstract class AbstractEntityJoinWalker extends JoinWalker {
 		if ( getFactory().getSettings().isCommentsEnabled() ) {
 			select.setComment( getComment() );
 		}
+		this.select = select;
 		sql = select.toStatementString();
 	}
 

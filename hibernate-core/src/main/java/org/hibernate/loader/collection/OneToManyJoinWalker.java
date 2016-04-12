@@ -128,7 +128,7 @@ public class OneToManyJoinWalker extends CollectionJoinWalker {
 		if ( getFactory().getSettings().isCommentsEnabled() ) {
 			select.setComment( "load one-to-many " + oneToManyPersister.getRole() );
 		}
-
+		this.select = select;
 		sql = select.toStatementString();
 	}
 

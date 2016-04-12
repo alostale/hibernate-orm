@@ -49,6 +49,7 @@ import org.hibernate.sql.ConditionFragment;
 import org.hibernate.sql.DisjunctionFragment;
 import org.hibernate.sql.InFragment;
 import org.hibernate.sql.JoinFragment;
+import org.hibernate.sql.Select;
 import org.hibernate.type.AssociationType;
 import org.hibernate.type.CompositeType;
 import org.hibernate.type.EntityType;
@@ -82,6 +83,7 @@ public class JoinWalker {
 	protected LockOptions lockOptions;
 	protected LockMode[] lockModeArray;
 	protected String sql;
+	protected Select select;
 
 	protected JoinWalker(
 			SessionFactoryImplementor factory,
@@ -170,6 +172,18 @@ public class JoinWalker {
 
 	public void setSql(String sql) {
 		this.sql = sql;
+	}
+
+	public Select getSelect() {
+		return select;
+	}
+
+	public String getBaseSQL() {
+		return null;
+	}
+
+	public String getBatchSQL() {
+		return null;
 	}
 
 	protected SessionFactoryImplementor getFactory() {
