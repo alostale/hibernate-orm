@@ -1,3 +1,9 @@
+Openbravo changes
+=================
+
+* [28479][HHH-11703] - unneeded queriest to AD_Language
+* [30291] - reduced DAL memory footprint
+
 Hibernate Changelog
 ===================
 Note: Newer entries are automatically generated and the description might not
