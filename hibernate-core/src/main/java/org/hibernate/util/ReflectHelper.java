@@ -28,6 +28,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.regex.Pattern;
 
 import org.hibernate.AssertionFailure;
 import org.hibernate.MappingException;
@@ -46,6 +47,9 @@ import org.hibernate.type.Type;
  * @author Steve Ebersole
  */
 public final class ReflectHelper {
+
+	private static final Pattern JAVA_CONSTANT_PATTERN = Pattern.compile(
+			"[a-z\\d]+\\.([A-Z]{1}[a-z\\d]+)+\\$?([A-Z]{1}[a-z\\d]+)*\\.[A-Z_\\$]+", Pattern.UNICODE_CHARACTER_CLASS);
 
 	//TODO: this dependency is kinda Bad
 	private static final PropertyAccessor BASIC_PROPERTY_ACCESSOR = new BasicPropertyAccessor();
@@ -263,6 +267,10 @@ public final class ReflectHelper {
 	public static Object getConstantValue(String name) {
 		Class clazz;
 		try {
+			// Openbravo issue 37115 backports HHH-4959 and HHH-11377
+			if ( !JAVA_CONSTANT_PATTERN.matcher( name ).find() ) {
+					return null;
+			}
 			clazz = classForName( StringHelper.qualifier( name ) );
 		}
 		catch ( Throwable t ) {
