@@ -192,6 +192,7 @@ public final class SessionFactoryImpl implements SessionFactory, SessionFactoryI
 	private transient boolean isClosed = false;
 	private final transient TypeResolver typeResolver;
 	private final transient TypeHelper typeHelper;
+	private final transient Map<String, String[]> implementorsCache = new ConcurrentHashMap<String, String[]>();
 
 	public SessionFactoryImpl(
 			Configuration cfg,
@@ -821,13 +822,19 @@ public final class SessionFactoryImpl implements SessionFactory, SessionFactoryI
 	 * and excluding mapped subclasses/joined-subclasses of other classes in the result.
 	 */
 	public String[] getImplementors(String className) throws MappingException {
+		if (implementorsCache.containsKey(className)) {
+			return implementorsCache.get(className);
+		}
 
 		final Class clazz;
+		String[] implementors;
 		try {
 			clazz = ReflectHelper.classForName(className);
 		}
 		catch (ClassNotFoundException cnfe) {
-			return new String[] { className }; //for a dynamic-class
+			implementors = new String[] { className }; //for a dynamic-class
+			implementorsCache.put(className, implementors);
+			return implementors;
 		}
 
 		ArrayList results = new ArrayList();
@@ -841,7 +848,9 @@ public final class SessionFactoryImpl implements SessionFactory, SessionFactoryI
 				boolean isMappedClass = className.equals(testClassName);
 				if ( testQueryable.isExplicitPolymorphism() ) {
 					if ( isMappedClass ) {
-						return new String[] {className}; //NOTE EARLY EXIT
+						implementors =  new String[] {className}; //NOTE EARLY EXIT
+						implementorsCache.put(className, implementors);
+						return implementors;
 					}
 				}
 				else {
@@ -867,7 +876,9 @@ public final class SessionFactoryImpl implements SessionFactory, SessionFactoryI
 				}
 			}
 		}
-		return (String[]) results.toArray( new String[ results.size() ] );
+		implementors = (String[]) results.toArray( new String[ results.size() ] );
+		implementorsCache.put(className, implementors);
+		return implementors;
 	}
 
 	public String getImportedClassName(String className) {
